@@ -1,0 +1,44 @@
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_changed_dns_requires_explicit_disconnect (test_backend.BackendTests.test_changed_dns_requires_explicit_disconnect) ... ok
+test_consent_names_not_stored_in_plaintext (test_backend.BackendTests.test_consent_names_not_stored_in_plaintext) ... ok
+test_core_flow_never_fabricates_protection (test_backend.BackendTests.test_core_flow_never_fabricates_protection) ... ok
+test_delete_account_removes_records_and_peers (test_backend.BackendTests.test_delete_account_removes_records_and_peers) ... ok
+test_enrollment_scope_cannot_provision (test_backend.BackendTests.test_enrollment_scope_cannot_provision) ... ok
+test_expired_session_and_logout (test_backend.BackendTests.test_expired_session_and_logout) ... ok
+test_expired_session_is_removed (test_backend.BackendTests.test_expired_session_is_removed) ... ok
+test_failed_revocation_preserves_tracking (test_backend.BackendTests.test_failed_revocation_preserves_tracking) ... ok
+test_family_limit_counts_outstanding_invitations (test_backend.BackendTests.test_family_limit_counts_outstanding_invitations) ... ok
+test_family_owner_cannot_read_member_device (test_backend.BackendTests.test_family_owner_cannot_read_member_device) ... ok
+test_idempotent_connect_reuses_address (test_backend.BackendTests.test_idempotent_connect_reuses_address) ... ok
+test_identity_required_fails_closed (test_backend.BackendTests.test_identity_required_fails_closed) ... ok
+test_invalid_key_is_rejected (test_backend.BackendTests.test_invalid_key_is_rejected) ... ok
+test_mfa_reset_invalidates_old_sessions (test_backend.BackendTests.test_mfa_reset_invalidates_old_sessions) ... ok
+test_no_broker_is_an_error_not_success (test_backend.BackendTests.test_no_broker_is_an_error_not_success) ... ok
+test_no_sensitive_echo_in_validation (test_backend.BackendTests.test_no_sensitive_echo_in_validation) ... ok
+test_origin_and_request_size (test_backend.BackendTests.test_origin_and_request_size) ... ok
+test_parallel_device_allocations_are_unique (test_backend.BackendTests.test_parallel_device_allocations_are_unique) ... ok
+test_partial_provision_timeout_retains_allocation (test_backend.BackendTests.test_partial_provision_timeout_retains_allocation) ... ok
+test_realistic_handshake_is_limited_evidence (test_backend.BackendTests.test_realistic_handshake_is_limited_evidence) ... ok
+test_rejects_unsigned_or_stale_disclosure (test_backend.BackendTests.test_rejects_unsigned_or_stale_disclosure) ... ok
+test_security_headers_and_frontend (test_backend.BackendTests.test_security_headers_and_frontend) ... ok
+test_stale_handshake_warns_once_on_transition (test_backend.BackendTests.test_stale_handshake_warns_once_on_transition) ... ok
+test_strict_types_and_unknown_fields (test_backend.BackendTests.test_strict_types_and_unknown_fields) ... ok
+test_totp_replay_and_recovery_code_reuse (test_backend.BackendTests.test_totp_replay_and_recovery_code_reuse) ... ok
+test_unknown_server_rejected_before_probing (test_backend.BackendTests.test_unknown_server_rejected_before_probing) ... ok
+test_blocklist_compilation_is_label_based_and_explicit (test_backend.UnitTests.test_blocklist_compilation_is_label_based_and_explicit) ... ok
+test_broker_parses_real_wg_space_separated_allowed_ips (test_backend.UnitTests.test_broker_parses_real_wg_space_separated_allowed_ips) ... ok
+test_broker_rejects_unexpected_operation_and_nonpool_address (test_backend.UnitTests.test_broker_rejects_unexpected_operation_and_nonpool_address) ... ok
+test_dns_addresses_are_not_allocated_to_devices (test_backend.UnitTests.test_dns_addresses_are_not_allocated_to_devices) ... ok
+test_evidence_confusion_cases (test_backend.UnitTests.test_evidence_confusion_cases) ... ok
+test_provisioned_but_unavailable_stays_unknown (test_backend.UnitTests.test_provisioned_but_unavailable_stays_unknown) ... ok
+test_public_key_canonicalization (test_backend.UnitTests.test_public_key_canonicalization) ... ok
+test_receipt_document_changes_with_collection_policy (test_backend.UnitTests.test_receipt_document_changes_with_collection_policy) ... ok
+test_rfc6238_sha1_vector (test_backend.UnitTests.test_rfc6238_sha1_vector) ... ok
+test_unix_broker_rejects_malformed_and_mismatched_observations (test_backend.UnitTests.test_unix_broker_rejects_malformed_and_mismatched_observations) ... ok
+test_warning_cooldown_and_recovery (test_backend.UnitTests.test_warning_cooldown_and_recovery) ... ok
+
+----------------------------------------------------------------------
+Ran 37 tests in 14.165s
+
+OK
