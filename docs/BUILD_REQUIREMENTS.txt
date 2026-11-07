@@ -1,0 +1,469 @@
+You are an expert full-stack engineer and cybersecurity specialist. Design and build **Cyber One**, a privacy-focused VPN platform with an accessible interface and an interactive, synchronized hackathon demonstration.
+
+Provide complete code, beginner-friendly explanations, setup instructions, meaningful tests, and honest implementation status. Preserve all requirements below while resolving conflicts explicitly.
+
+**1. Product scope and operating modes**
+
+Build two clearly separated experiences:
+
+**A. Judge demonstration**
+
+- Judges access a public website from their phones without installing software or creating accounts.
+- They can simulate connecting, inspect encrypted demonstration backups, and trigger a room-scoped panic event that synchronizes across screens.
+- Use anonymous, short-lived sessions and synthetic, non-sensitive data.
+- Do not collect names, physical IDs, email addresses, passwords, or browsing activity.
+- Clearly state that the website demonstration does not route or protect their device traffic.
+
+**B. Real VPN service**
+
+- Accounts, family membership, disclosure agreements, authentication, device registration, and revocation.
+- Linux WireGuard servers and a Windows native client.
+- Real connection evidence, optional DNS-based ad blocking, and privacy controls.
+- Actual protection requires the native client, configured infrastructure, and successful verification.
+
+Never let simulated state affect real accounts, VPN credentials, server availability, or production traffic.
+
+**2. Architecture and technology**
+
+Use:
+
+- Next.js App Router with TypeScript.
+- Tailwind CSS.
+- Next.js Route Handlers for application APIs.
+- Upstash Redis through the Vercel Marketplace using `@upstash/redis`.
+- A persistent database suitable for accounts, membership, consent, and device records, with schema and migrations.
+- Vercel-compatible deployment.
+- A separate Linux VPS running WireGuard for real networking.
+- A Windows native client or documented integration with the official WireGuard client.
+
+Separate:
+
+1. Presentation: account dashboard, presenter dashboard, and mobile judge portal.
+2. Application control: authorization, accounts, sessions, consent, rooms, warnings, and connection requests.
+3. Networking: narrowly scoped management service on the Linux WireGuard host.
+4. Native client: local private keys, tunnel activation, routes, DNS, IPv6 handling, and kill switch.
+
+Do not run WireGuard, privileged networking commands, persistent daemons, or permanent background loops inside Vercel Functions.
+
+Keep the demonstration runnable without purchasing a VPS. Provide explicit setup for infrastructure-dependent features rather than inventing successful integrations.
+
+**3. Shared state and fallback behavior**
+
+Do not use module-level variables as authoritative cross-device state in serverless deployments.
+
+Redis should manage:
+
+- Demo rooms and expiration.
+- Anonymous sessions and heartbeats.
+- Simulated connection membership.
+- Panic state.
+- Room generation and state version.
+- Rotation epoch.
+- Current demonstration encryption key and ciphertext.
+
+Use atomic operations or transactions. Prevent stale or concurrent requests from overwriting newer state.
+
+Provide a storage abstraction with:
+
+- **Shared mode:** Redis synchronizes separate devices.
+- **Local preview:** browser memory, optionally BroadcastChannel for tabs in the same browser.
+
+Without Redis credentials during local development, show:
+
+“Local preview: changes are limited to this browser. Cross-device synchronization requires Redis.”
+
+Do not claim polling or React state alone synchronizes separate phones.
+
+If configured Redis becomes unavailable, show an outage and stale-state warning. Do not silently fall back to isolated state.
+
+In production, missing shared-storage credentials must produce an actionable configuration error for shared-room features.
+
+**4. Presenter and judge access**
+
+Provide:
+
+- `/presenter`: laptop presentation dashboard.
+- `/join/[roomCode]`: mobile judge portal.
+- A separate authenticated account dashboard for the real service.
+
+Room creation returns:
+
+- A public judge invitation URL.
+- A separate private presenter credential.
+
+Generate QR codes locally from the actual invitation URL. Do not expose presenter credentials or use external QR-generation services.
+
+Use a validated deployment origin. Never generate deployed invitation links pointing to localhost.
+
+Judges may connect/disconnect their own simulated sessions and trigger confirmed demo panic. Only the presenter can reset or create a fresh room generation.
+
+Apply room expiration, session limits, rate limits, and appropriate token protection.
+
+**5. Visual design and accessibility**
+
+Create a polished dark cybersecurity dashboard using:
+
+- Deep gray backgrounds.
+- Neon green accents.
+- Red alerts with text and icons.
+- Clean typography and readable contrast.
+- Responsive layouts and generous touch targets.
+
+Presenter view includes:
+
+- Active simulated-device count.
+- Shared-state availability and synchronization status.
+- Synthetic upload/download charts labeled “Simulated traffic.”
+- Judge invitation QR code.
+- System Storage Inspector showing ciphertext.
+- Rotation number, last-update time, and panic status.
+- Architecture, implementation status, and limitations.
+
+Judge view includes:
+
+- “Connect to demo node” switch.
+- Clear connection feedback.
+- A large “Trigger demo panic” control requiring confirmation.
+- A persistent simulation label.
+
+Build in:
+
+- Keyboard navigation and visible focus.
+- Screen-reader labels and meaningful announcements.
+- Color-independent alerts.
+- Reduced-motion support.
+- Understandable errors and instructions.
+- Reflow on narrow screens and enlarged text.
+
+Do not use rapidly flashing overlays or announce every ciphertext update to screen readers.
+
+**6. Multi-device connection behavior**
+
+When a judge connects:
+
+- Create or update their anonymous session.
+- Count that session exactly once.
+- Synchronize the count to the presenter and other participants.
+
+Use idempotent requests and server-authoritative membership. Prevent duplicate clicks, retries, and reconnects from inflating the count.
+
+Use heartbeats and expiration so abandoned sessions stop contributing. Do not rely solely on browser unload events.
+
+Poll approximately once per second while visible, with sensible backoff and stale-state indicators.
+
+Target approximately one-to-two-second synchronization under normal conditions. Measure actual results instead of claiming guaranteed instant delivery.
+
+**7. Rolling encrypted-backup demonstration**
+
+Use real **AES-256-GCM** through a supported cryptographic implementation. Do not present random hex strings as encryption.
+
+Encrypt synthetic, non-sensitive metadata only. Never include real VPN private keys, passwords, physical IDs, browsing records, or sensitive account information.
+
+Demonstrate an accelerated rotation every three seconds:
+
+- Explain that this represents an illustrative hourly cycle.
+- Generate a fresh encryption key and unique random nonce for each rotation.
+- Encrypt a defined, canonical payload.
+- Store ciphertext, nonce, authentication tag, rotation epoch, and necessary public metadata.
+- Retain only the current demonstration key in application-managed state.
+
+Include an identical-payload example showing that ciphertext changes despite unchanged plaintext. Distinguish key rotation, randomized encryption, and payload changes.
+
+Do not claim changing ciphertext guarantees unlinkability.
+
+Use atomic, request-driven rotation checks during polling. Do not rely on a permanent serverless `setInterval`. Explain that rotations do not execute independently when no requests occur.
+
+Keep keys server-side in shared mode. Return only ciphertext and appropriate public metadata.
+
+**8. RAM-only claims and panic protocol**
+
+Present “RAM-Only Defensible VPN Node with Rolling Cipher Backup” as an architectural concept unless a real RAM-only deployment has been implemented and verified.
+
+Redis, serverless memory, provider backups, logs, and persistence settings do not automatically establish RAM-only operation.
+
+Display:
+
+“This prototype demonstrates application-level key removal. It does not prove physical RAM erasure or deletion from provider backups.”
+
+When a judge confirms panic:
+
+- Atomically mark that room generation as panicked.
+- Remove the current application-managed demonstration key.
+- Set active simulated connections to zero.
+- Reject subsequent connection, heartbeat, and rotation writes for that generation.
+- Preserve the last ciphertext and freeze the inspector.
+- Synchronize panic across all participating screens.
+
+Show:
+
+“DEMO PANIC ACTIVE: ACTIVE DEMO KEY REMOVED.”
+
+Explain:
+
+“The application no longer holds the current demo key. This does not prove that infrastructure copies or backups are unrecoverable.”
+
+Do not claim verified physical memory erasure or permanent unrecoverability.
+
+Handle panic racing with rotation, connection, and heartbeat requests. A stale operation must never restore a key or reactivate sessions.
+
+Only the presenter can reset into a fresh generation with new keys and invalidated old-generation credentials.
+
+Panic affects demonstration state only. It must not wipe disks, shut down a VPS, execute offensive actions, or delete real user records.
+
+**9. Real-service disclosure and onboarding**
+
+The anonymous judge demonstration must remain separate from real-service onboarding.
+
+For real users, show a readable disclosure before personal information is submitted. Explain:
+
+- Data collected and its purpose.
+- Local versus external processing.
+- Providers receiving information.
+- Operational logging.
+- Retention and deletion.
+- User controls and account deletion.
+
+Require explicit agreement and a typed name for the real-service disclosure. Treat the name as personal information. Minimize retained agreement evidence while preserving document version, acceptance time, and a suitable receipt.
+
+Do not claim a typed name proves identity, guarantees privacy, or establishes universal legal compliance.
+
+Separate required processing from optional analytics consent. Do not transmit optional data without agreement.
+
+The proposed real-service flow is:
+
+Disclosure → agreement → identity verification if required by policy → account creation → authentication setup → ready screen.
+
+Evaluate whether physical-ID verification is necessary. Prefer retaining a verification result rather than raw ID images wherever sufficient.
+
+Use a replaceable verification-provider interface. Clearly label development mocks. If verification is required but unavailable, fail closed rather than pretending it succeeded.
+
+Explain family-member verification and interrupted onboarding. Do not claim ID checks eliminate bots, scams, or abuse.
+
+**10. Real accounts and family profiles**
+
+Provide:
+
+- One free main account.
+- Up to three additional family profiles initially, with a configurable limit.
+- Separate authentication, devices, and private settings for each member.
+- Main-account invitation and membership management.
+- Authorization that prevents automatic access to members’ credentials or browsing activity.
+- Authenticator-app verification or passkeys.
+- Secure session expiry, recovery, device revocation, and account deletion.
+
+Hash passwords appropriately. Protect factor enrollment, recovery, and changes. Clearly identify unavailable authentication integrations.
+
+Do not invent a recovery bypass when identity or ownership cannot be established.
+
+**11. Real VPN connection flow**
+
+After required onboarding, target verified protection within one minute of pressing Connect, without a manual.
+
+Provide a central connect/disconnect control with:
+
+- Secure automatic server selection by default.
+- Manual server selection.
+- Country/city labels from configured inventory.
+- Auto and Off options.
+- Actual connecting, connected, disconnecting, disconnected, error, and unknown states.
+- Controlled server switching.
+- Optional ad/tracker blocking enabled by default where supported.
+
+Use measured latency, health, or load only when available. Otherwise disclose the actual selection policy.
+
+The native client must:
+
+- Generate and retain its private key locally.
+- Activate the encrypted tunnel.
+- Apply routes and DNS settings.
+- Handle IPv6 deliberately.
+- Enforce and verify kill-switch behavior.
+- Stop its local tunnel even when the API is unavailable.
+
+The backend returns public settings for local configuration assembly. Do not generate device private keys centrally or expose them through downloadable profiles.
+
+Measure the one-minute target from Connect to successful required device checks. Server provisioning or a handshake alone is insufficient.
+
+Explain that a VPN changes public egress IP, not necessarily GPS location, cookies, or tracking identity. Do not promise complete anonymity, universal restriction bypass, or prevention of every theft.
+
+**12. WireGuard server management**
+
+Use an authenticated management service on the owned Linux host.
+
+It must:
+
+- Operate on configured interfaces only.
+- Provision and revoke validated public peer keys.
+- Allocate addresses safely.
+- Return sanitized, timestamped observations.
+- Separate ordinary APIs from privileged operations.
+- Reject arbitrary commands, executables, hosts, and interfaces.
+- Handle duplicate requests, partial failures, and uncertain revocation without losing track of possible live peers.
+
+Do not run shell commands constructed from user input.
+
+Do not automatically purchase infrastructure or deploy publicly. Provide setup instructions and justified resource requirements.
+
+**13. Ad blocking and temporary identities**
+
+For ad blocking:
+
+- Use an optional DNS-based approach or another clearly justified implementation.
+- Explain where filtering occurs and what data the resolver receives.
+- Provide reviewed policy updates and exceptions.
+- Avoid query-history collection by default.
+- Distinguish requested filtering from verified enforcement.
+- Explain that DNS filtering cannot block every ad or inspect encrypted page content.
+
+For temporary identities:
+
+- Distinguish temporary VPN access, email aliases, and external accounts.
+- Propose a feasible implementation such as revocable email aliases.
+- Include expiration, revocation, and proportionate abuse controls.
+- Use a replaceable provider integration where necessary.
+- Do not create external accounts automatically or claim the VPN replaces all personal information with “the VPN’s data.”
+
+**14. Honest evidence and actionable warnings**
+
+Use deterministic security decisions and actual observations. AI-generated statements are not evidence of protection.
+
+Never invent:
+
+- Public IPs or server availability.
+- Identity-verification results.
+- Live throughput.
+- Successful blocking.
+- Security accuracy percentages.
+- Device protection or elapsed-time results.
+
+Synthetic charts and walkthroughs are permitted only when clearly labeled.
+
+Validate external responses. Missing, stale, malformed, or inconsistent evidence remains unknown or unavailable.
+
+A fresh handshake indicates recent authenticated contact; it does not establish complete routing, DNS, IPv6, or kill-switch protection. Stale contact is not automatically proof of an attack.
+
+Return structured warnings containing:
+
+- Stable code.
+- Severity.
+- Plain-language explanation.
+- Action.
+- Retryability.
+- Timestamp and evidence source where relevant.
+
+Time warnings appropriately:
+
+- Before collection: disclosure and agreement.
+- During connection: calm progress.
+- On failure: clear recovery steps.
+- On lost or stale evidence: explain what is known and unknown.
+- Before disabling safeguards: explain consequences.
+- On unavailable ad blocking: distinguish it from tunnel failure.
+
+Deduplicate repeated alerts, preserve unresolved banners, and interrupt only when immediate action is justified.
+
+If detection/classification is implemented, define its target and evaluate labeled cases. Report actual false positives, false negatives, and limitations. Input validation cannot guarantee that all data is truthful.
+
+**15. Security of the tool — 15 points**
+
+Apply:
+
+- Least privilege.
+- Minimal collection.
+- Secure secret handling.
+- Local processing where practical.
+- Explicit authorization boundaries.
+- An attack surface the team can explain.
+
+Keep secrets out of source control, client bundles, URLs, and logs. Protect tokens, encryption keys, authenticator secrets, and backups.
+
+Implement bounded payloads, strict schemas, throttling, expiry, appropriate origin checks, safe rendering, and replay protection where needed.
+
+Document data collection, retention, deletion, infrastructure visibility, and backup limitations.
+
+Threat-model authentication, recovery, verification callbacks, family invitations, aliases, rooms, presenter credentials, panic/reset races, APIs, databases, Redis, VPN servers, privileged clients, administration, dependencies, and app updates.
+
+Explain assets, entry points, trust boundaries, protections, and remaining risks.
+
+**16. Usability, innovation, and hackathon evidence**
+
+Usability and accessibility — **25 points**:
+
+A nontechnical user or busy developer should understand the flow, encounter secure defaults, and reach verified protection within the measured target after onboarding.
+
+Innovation — **10 points**:
+
+Implement a feasible differentiator beyond an API wrapper: evidence-based protection status combined with an inspectable rolling-encryption and panic demonstration. Explain its value without claiming unprecedented novelty.
+
+Prepare evidence for:
+
+- Real users tested during the event and design changed from feedback: **+2**.
+- Built-in accessibility: **+2**.
+- Open-source project with clear README/install steps: **+1**.
+
+Provide a testing script measuring completion, connection time, confusion, and warning comprehension. Include blank feedback, change, and retest logs. Never invent participants or results.
+
+**17. Penalties and event constraints**
+
+Avoid:
+
+- Unjustified over-scoped permissions: **−3**.
+- Collection/transmission without disclosure: **−5**.
+- Core work before the hackathon starts: **disqualification**.
+- Offensive actions against unauthorized systems or live malware samples: **disqualification**.
+
+Before generating implementation intended for event submission, establish the event’s timing and AI-assistance rules. If eligibility is unknown, provide planning and requirements until clarified. Never misrepresent when work occurred.
+
+Do not publish a repository, purchase services, or deploy publicly automatically.
+
+**18. Tests and acceptance criteria**
+
+Include meaningful tests for:
+
+- Account/profile/device authorization.
+- Authentication enrollment, replay, recovery, and expiry.
+- Disclosure versioning and agreement validation.
+- Idempotent connection counts and heartbeat expiry.
+- Room expiration and invalid credentials.
+- Concurrent rotations.
+- Panic racing with connect, heartbeat, and rotation.
+- Stale writes after reset.
+- Presenter-only reset.
+- Missing Redis credentials and configured-provider outages.
+- Local-preview isolation.
+- AES-GCM decryption and tamper rejection.
+- WireGuard provisioning/revocation failures.
+- Bad input, unavailable integrations, and honest unknown states.
+
+Provide separate acceptance checklists for:
+
+1. Laptop presenter plus phone judge synchronization.
+2. Real Windows client plus Linux WireGuard server.
+3. Keyboard, screen-reader, contrast, reduced-motion, and mobile use.
+
+Clearly distinguish automated fixtures, live checks, human testing, and untested behavior.
+
+**19. Delivery requirements**
+
+Provide:
+
+1. Architecture and justified implementation choices.
+2. Complete project structure and code for every required file.
+3. Persistent database schema and migrations.
+4. Redis schema and atomic state-transition design.
+5. API documentation with request/response examples.
+6. `.env.example` without secrets.
+7. Exact local installation commands and `npm run dev`.
+8. Vercel, Redis, database, and Linux VPN deployment instructions.
+9. Windows native-client integration requirements.
+10. Presenter and judge instructions.
+11. Automated tests and manual acceptance checklists.
+12. Privacy inventory and threat model.
+13. README, proposed license, and open-source preparation.
+14. A rubric mapping and implemented/simulated/untested/unfinished feature table.
+
+Keep the demonstration self-contained in the Next.js project, with external integrations behind explicit interfaces. Local preview must run without cloud credentials, while accurately disclosing its limitations.
+
+Implement in coherent stages: shared judge demonstration, real-service account controls, then infrastructure-dependent networking and native-client integration. Preserve all requirements; do not quietly drop difficult features or describe placeholders as complete.
+
+Start with the architecture and unresolved decisions. Once event eligibility is established, build and test the working core. Ask only questions that materially change implementation; otherwise state reasonable assumptions and proceed.
