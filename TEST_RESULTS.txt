@@ -1,0 +1,42 @@
+Cyber One verification
+
+37 automated tests passed using Node.js v24.22.1.
+- AES-GCM randomized ciphertext and authentication/tamper rejection
+- Backup-code format, uniqueness and case sensitivity
+- Registration validation, normalized username uniqueness and staged disclosure authorization
+- One household profile shared by eight mini users
+- Administrator-only incident pause and snapshot isolation
+- Exact account deletion phrase and server-side two-second delay; session/snapshot removal
+- Requested unlimited code reuse and logout revocation
+- Authentication rate limits and fail-closed production registration
+- Harmless URL fixtures, unsupported schemes, embedded credentials and unknown outcomes
+- Administrator snapshot cutoff deletion and access control
+- Separate family credentials, global username collisions, password hashing and sanitized responses
+- Mini-user role isolation and own-code/disclosure enforcement
+- Independent family On/Off status with a single shared household profile
+- Family-member removal/session revocation and full household deletion cascade
+- Family-code countdown and legacy-label login upgrade
+- Required sample-image validation and server-enforced initial ten-second hold
+- Frontend countdown keeps Continue disabled until ten seconds pass AND saved-code acknowledgement is checked
+- Actual HTTP integration: encrypted local persistence, HttpOnly/SameSite cookies, cross-origin rejection, session revocation
+
+Syntax checks passed for API and frontend JavaScript.
+
+Not verified: browser rendering, screen-reader behavior, real-user usability, live PostgreSQL connection, Vercel deployment, cron delivery, native VPN traffic protection or real identity verification. The latter two are explicitly simulated/unavailable in this release.
+
+The test suite creates temporary accounts in isolated in-memory or temporary local storage and removes HTTP test state afterward. No accounts, real IDs, application keys, passwords or .env files are included in the ZIP.
+
+Email-recovery additions: verified-address gating; hashed, purpose-bound, expiring and single-use tokens; generic responses; reminder email privacy; password-only/code-only/combined reset; session and actor isolation; shared mailboxes; legacy email enrollment; deletion cleanup; mocked provider transport; missing configuration; signup email fields; HTTP verification and combined recovery round trip. All provider calls in tests are mocked; no emails were sent. Live provider acceptance/inbox delivery and Vercel deployment remain unverified.
+
+Gmail transport update: fixed Gmail sender/authentication identity, TLS configuration, App Password display-space handling, SMTP recipient rejection/failure handling, cleanup, and HTTP account recovery round trip through a mocked SMTP transport. No live emails were sent. Nodemailer dependency installation was blocked by build-environment registry restrictions; real package loading, Google authentication and Vercel SMTP delivery must be verified after deployment.
+
+Storage diagnostics: tested secret-safe classifications, decryption failure without modifying ciphertext, and hosted missing/invalid database configuration. Logs include safe stage/code/reference only. Live database connectivity cannot be diagnosed until the operator supplies the new log code from the deployed site.
+
+
+PLAIN-LANGUAGE AND READ-ALOUD UPDATE
+- Complete suite: 44 tests passed, zero failures.
+- Seven new tests cover local-only speech voice selection and speed, section selection, both-section playback, pause/resume/stop, page exit and cancellation, unsupported browsers and delayed voice loading, speech errors, single power-button on/off flow, Auto while active, required consent fields and matching v3 consent version.
+- JavaScript syntax checks passed for app.js, read-aloud.js, server.js, and api/index.js.
+- Tests use speech and DOM mocks; audible playback and visual layout have not been verified in a live browser. Voice availability and behavior depend on the browser and installed device voices.
+- No live Gmail, PostgreSQL, Vercel, or WireGuard integration was tested by this update.
+- No new environment variables, dependencies, or database schema changes.

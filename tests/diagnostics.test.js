@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {randomBytes} from 'node:crypto';
+import {StoreFault,safeDiagnostic,decryptState} from '../lib/diagnostics.js';
+import {seal,open} from '../lib/security.js';
+import {transact} from '../lib/store.js';
+test('safe diagnostics keep classification and error codes but exclude secret details',()=>{const cause=Object.assign(Error('postgresql://user:private@server/db'),{code:'42P01'});const data=safeDiagnostic(new StoreFault('DB_READ_FAILED','read',cause));assert.deepEqual(data,{code:'DB_READ_FAILED',stage:'read',detail:'42P01'});assert.ok(!JSON.stringify(data).includes('private'));assert.deepEqual(safeDiagnostic(Object.assign(Error('private'),{code:'secret-connection-string'})),{code:'INTERNAL_ERROR',stage:'request'});});
+test('wrong encryption key is classified without mutating or exposing encrypted state',()=>{const key=randomBytes(32).toString('hex'),other=randomBytes(32).toString('hex');const box=seal({username:'private-user'},key),before=JSON.stringify(box);assert.throws(()=>decryptState(box,b=>open(b,other)),e=>safeDiagnostic(e).code==='STATE_DECRYPT_FAILED'&&!e.message.includes('private-user'));assert.equal(JSON.stringify(box),before);assert.equal(decryptState(box,b=>open(b,key)).username,'private-user');});
+test('missing hosted database and invalid connection strings fail before touching storage',async()=>{const old={VERCEL:process.env.VERCEL,DATABASE_URL:process.env.DATABASE_URL};try{process.env.VERCEL='1';delete process.env.DATABASE_URL;await assert.rejects(transact(()=>{}),e=>e.code==='DB_NOT_CONFIGURED');process.env.DATABASE_URL='"postgresql://private:secret@host/db"';await assert.rejects(transact(()=>{}),e=>e.code==='DB_URL_INVALID'&&!e.message.includes('secret'));}finally{for(const[k,v]of Object.entries(old)){if(v===undefined)delete process.env[k];else process.env[k]=v;}}});
